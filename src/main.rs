@@ -1,3 +1,5 @@
+mod parser;
+
 use std::path::PathBuf;
 use structopt::StructOpt;
 
@@ -29,5 +31,5 @@ fn main() {
         }
     };
 
-    println!("{}", source);
+    println!("{}", crate::parser::parse(&source));
 }

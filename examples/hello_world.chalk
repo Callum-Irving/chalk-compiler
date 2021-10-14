@@ -1,0 +1,9 @@
+fn main() {
+	"String literal";
+}
+
+// This is a comment
+fn foo() returns int {
+	int thing = 2;
+	123.123; // Float literal
+}

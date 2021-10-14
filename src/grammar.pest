@@ -1,0 +1,76 @@
+WHITESPACE = _{ " " | "\n" | "\t" }
+COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n" }
+
+int = @{ ASCII_DIGIT+ }
+float = @{ ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT+ }
+ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+// Quote, followed by non-quote, non-backslash character or any escaped predefined character
+// TODO: There should be a list of escapable characters like: https://pest.rs/book/examples/rust/literals.html
+predefined = _{ "n" | "r" | "t" | "\\" | "0" | "\"" | "'" }
+string = { "\"" ~ ( (!("\"" | "\\") ~ ANY) | ("\\" ~ predefined) )* ~ "\"" }
+
+datatype = { "int" | "float" | "string" }
+
+// TODO: Implement operator precedence using PrecClimber
+// https://docs.rs/pest/2.1.3/pest/prec_climber/struct.PrecClimber.html
+// TODO: May need to be re-ordered
+binaryop = {
+	"="
+	| "+"
+	| "-"
+	| "*"
+	| "/"
+	| "+="
+	| "-="
+	// Comparisons
+	| "||"
+	| "&&"
+	| "=="
+	| "!="
+	// Bitwise
+	| "<<"
+	| ">>"
+	| "|"
+	| "&"
+	| "^"
+	| "~"
+}
+
+unaryop = {
+	"&"
+	| "*"
+	| "-"
+	| "!"
+}
+
+// TODO: Figure out left recursion for PEG
+// https://medium.com/@gvanrossum_83706/left-recursive-peg-grammars-65dab3c580e1
+expression = {
+	float
+	| int
+	| string
+	| "(" ~ expression ~ ")"
+	//| expression ~ "[" ~ expression ~ "]"
+	//| expression ~ "(" ~ ")" // TODO: Function call
+	//| expression ~ binaryop ~ expression
+	| unaryop ~ expression
+	//| expression ~ "?" ~ expression ~ ":" ~ expression
+}
+
+statement = !{
+	"{" ~ statement* ~ "}"
+	| "if" ~ "(" ~ expression ~ ")" ~ statement
+	| "while" ~ "(" ~ expression ~ ")" ~ statement
+	| "return" ~ expression ~ ";"
+	| datatype ~ ident ~ "=" ~ expression ~ ";"
+	| expression ~ ";"
+	| ";"
+}
+
+function = @{
+	"fn" ~ WHITESPACE+ ~ ident ~ WHITESPACE* ~ "(" ~ WHITESPACE* ~ ")" ~ WHITESPACE* ~ ("returns" ~ WHITESPACE+ ~ (datatype | ident))? ~ WHITESPACE* ~ statement+
+}
+
+library = {
+	SOI ~ function* ~ EOI
+}
