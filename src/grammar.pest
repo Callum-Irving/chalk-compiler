@@ -3,38 +3,38 @@ COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n" }
 
 // LIBRARY
 Library = {
-	SOI ~ Function* ~ EOI
+    SOI ~ Function* ~ EOI
 }
 
 // FUNCTION
 // TODO: Args
 Function = {
-	FunctionStart ~ "(" ~ ")" ~ Returns? ~ BlockStatement
+    FunctionStart ~ "(" ~ ")" ~ Returns? ~ BlockStatement
 }
 
 FunctionStart = ${
-	"fn" ~ WHITESPACE+ ~ ident
+    "fn" ~ WHITESPACE+ ~ ident
 }
 
 Returns = ${
-	("returns" ~ WHITESPACE+ ~ (Datatype | ident))
+    ("returns" ~ WHITESPACE+ ~ (Datatype | ident))
 }
 
 Datatype = { "int" | "float" | "string" }
 
 // STATEMENT
 Statement = !{
-	BlockStatement
-	| "if" ~ "(" ~ Expression ~ ")" ~ Statement
-	| "while" ~ "(" ~ Expression ~ ")" ~ Statement
-	| "return" ~ Expression ~ ";"
-	| Datatype ~ ident ~ "=" ~ Expression ~ ";"
-	| Expression ~ ";"
-	| ";"
+    BlockStatement
+    | "if" ~ "(" ~ Expression ~ ")" ~ Statement
+    | "while" ~ "(" ~ Expression ~ ")" ~ Statement
+    | "return" ~ Expression ~ ";"
+    | Datatype ~ ident ~ "=" ~ Expression ~ ";"
+    | Expression ~ ";"
+    | ";"
 }
 
 BlockStatement = !{
-	"{" ~ Statement* ~ "}"
+    "{" ~ Statement* ~ "}"
 }
 
 // EXPRESSION
@@ -64,12 +64,7 @@ UnaryExpression = {
     | PrimaryExpr
 }
 
-UnaryOp = {
-	"&"
-	| "*"
-	| "-"
-	| "!"
-}
+UnaryOp = { "&" | "*" | "-" | "!" }
 
 PrimaryExpr = {
     "true"
