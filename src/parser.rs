@@ -7,7 +7,7 @@ pub struct ChalkParser;
 
 pub fn parse(source: &str) -> String {
     let mut result = String::new();
-    let pairs = ChalkParser::parse(Rule::Library, source).unwrap_or_else(|e| panic!("{}", e));
+    let pairs = ChalkParser::parse(Rule::Program, source).unwrap_or_else(|e| panic!("{}", e));
     for pair in pairs {
         result.push_str(&format!("{:#?}", pair));
     }

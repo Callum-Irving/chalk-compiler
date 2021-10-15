@@ -1,9 +1,11 @@
-fn main() returns int{
+func main() returns int{
+	functionCall();
+	functionCall();
 	"String literal";
 }
 
 // This is a comment
-fn foo() returns int {
+func foo() returns int {
 	int thing = 2;
 	123.123; // Float literal
 }

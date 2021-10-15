@@ -1,26 +1,31 @@
 WHITESPACE = _{ " " | "\n" | "\t" | "\r" }
 COMMENT = _{ "//" ~ (!"\n" ~ ANY)* ~ "\n" }
 
-// LIBRARY
-Library = {
+// PROGRAM
+Program = {
     SOI ~ Function* ~ EOI
 }
 
 // FUNCTION
-// TODO: Args
 Function = {
-    FunctionStart ~ "(" ~ ")" ~ Returns? ~ BlockStatement
+    FunctionStart ~ "(" ~ Params? ~ ")" ~ Returns? ~ BlockStatement
 }
 
 FunctionStart = ${
-    "fn" ~ WHITESPACE+ ~ ident
+    "func" ~ WHITESPACE+ ~ Identifier
+}
+
+Params = {
+    Param ~ ("," ~ Param)*
+}
+
+Param = ${
+    (Datatype | Identifier) ~ WHITESPACE+ ~ Identifier
 }
 
 Returns = ${
-    ("returns" ~ WHITESPACE+ ~ (Datatype | ident))
+    ("returns" ~ WHITESPACE+ ~ (Datatype | Identifier))
 }
-
-Datatype = { "int" | "float" | "string" }
 
 // STATEMENT
 Statement = !{
@@ -28,7 +33,7 @@ Statement = !{
     | "if" ~ "(" ~ Expression ~ ")" ~ Statement
     | "while" ~ "(" ~ Expression ~ ")" ~ Statement
     | "return" ~ Expression ~ ";"
-    | Datatype ~ ident ~ "=" ~ Expression ~ ";"
+    | Datatype ~ Identifier ~ "=" ~ Expression ~ ";"
     | Expression ~ ";"
     | ";"
 }
@@ -61,24 +66,39 @@ MulExpression = {
 
 UnaryExpression = {
     UnaryOp ~ UnaryExpression
+    | PostfixExpression
     | PrimaryExpr
 }
 
 UnaryOp = { "&" | "*" | "-" | "!" }
+
+PostfixExpression = {
+    PrimaryExpr ~ (
+        "[" ~ Expression ~ "]"
+        | "(" ~ (ArgList)? ~ ")"
+        | "." ~ Identifier
+    )
+}
+
+ArgList = {
+    Expression ~ ("," ~ Expression)*
+}
 
 PrimaryExpr = {
     "true"
     | "false"
     | float
     | int
-    | ident
+    | Identifier
     | char
     | string
 }
 
+Datatype = { "int" | "float" | "string" }
+
 int = @{ ASCII_DIGIT+ }
 float = @{ ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT+ }
-ident = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
+Identifier = @{ (ASCII_ALPHA | "_") ~ (ASCII_ALPHANUMERIC | "_")* }
 char = @{ "\'" ~ ( (!("\'" | "\\") ~ ANY) | ("\\" ~ predefined) ) ~ "\'" }
 string = { "\"" ~ ( (!("\"" | "\\") ~ ANY) | ("\\" ~ predefined) )* ~ "\"" }
 predefined = _{ "n" | "r" | "t" | "\\" | "0" | "\"" | "'" }
